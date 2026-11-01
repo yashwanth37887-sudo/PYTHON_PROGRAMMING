@@ -1,1 +1,444 @@
 
+# ==========================================
+# SMART CAMPUS MANAGEMENT SYSTEM
+# ==========================================
+
+# Student records:
+# Student ID : [Name, Attendance, Marks, Events]
+
+students = {}
+
+# Event details stored using tuples
+events = [
+    ("E101", "Tech Fest", 3),
+    ("E102", "Sports Day", 5),
+    ("E103", "Cultural Fest", 4)
+]
+
+# Store event registrations
+event_registrations = {
+    "E101": [],
+    "E102": [],
+    "E103": []
+}
+
+# Resources stored using tuples
+resources = [
+    ("Projector", 5),
+    ("Computer", 10),
+    ("Microphone", 8),
+    ("Lab Equipment", 6)
+]
+
+# Resource allocation records
+resource_allocations = []
+
+
+# ==========================================
+# FUNCTION 1: ADD STUDENT
+# ==========================================
+
+def add_student():
+
+    sid = input("Enter Student ID: ")
+
+    if sid in students:
+        print("Student ID already exists!")
+        return
+
+    name = input("Enter Student Name: ")
+
+    students[sid] = [name, [], [], []]
+
+    print("Student added successfully!")
+
+
+# ==========================================
+# FUNCTION 2: VIEW STUDENTS
+# ==========================================
+
+def view_students():
+
+    if not students:
+        print("No student records found.")
+        return
+
+    print("\n--- STUDENT RECORDS ---")
+
+    for sid, details in students.items():
+
+        name, attendance, marks, registered = details
+
+        print("Student ID:", sid)
+        print("Student Name:", name)
+        print("------------------------")
+
+
+# ==========================================
+# FUNCTION 3: MARK ATTENDANCE
+# ==========================================
+
+def mark_attendance():
+
+    sid = input("Enter Student ID: ")
+
+    if sid not in students:
+        print("Student not found!")
+        return
+
+    date = input("Enter Date (DD-MM-YYYY): ")
+
+    status = input("Enter Attendance (P/A): ").upper()
+
+    if status not in ["P", "A"]:
+        print("Invalid attendance status!")
+        return
+
+    # Nested list: [date, status]
+    students[sid][1].append([date, status])
+
+    print("Attendance recorded successfully!")
+
+
+# ==========================================
+# FUNCTION 4: ENTER MARKS
+# ==========================================
+
+def enter_marks():
+
+    sid = input("Enter Student ID: ")
+
+    if sid not in students:
+        print("Student not found!")
+        return
+
+    subject = input("Enter Subject Name: ")
+
+    try:
+        mark = float(input("Enter Marks (0-100): "))
+    except ValueError:
+        print("Please enter valid numeric marks!")
+        return
+
+    if mark < 0 or mark > 100:
+        print("Marks must be between 0 and 100!")
+        return
+
+    # Nested list: [subject, marks]
+    students[sid][2].append([subject, mark])
+
+    print("Marks entered successfully!")
+
+
+# ==========================================
+# FUNCTION 5: EVENT REGISTRATION
+# ==========================================
+
+def register_event():
+
+    sid = input("Enter Student ID: ")
+
+    if sid not in students:
+        print("Student not found!")
+        return
+
+    print("\n--- AVAILABLE EVENTS ---")
+
+    for eid, event_name, capacity in events:
+
+        registered = event_registrations[eid]
+
+        print(eid, "-", event_name,
+              "| Available Seats:", capacity - len(registered))
+
+    eid = input("Enter Event ID: ").upper()
+
+    if eid not in event_registrations:
+        print("Invalid Event ID!")
+        return
+
+    registered = event_registrations[eid]
+
+    event_name = ""
+
+    for event_id, name, capacity in events:
+        if event_id == eid:
+            event_name = name
+            break
+
+    if sid in registered:
+        print("Already registered for this event!")
+        return
+
+    capacity = 0
+
+    for event_id, name, seats in events:
+        if event_id == eid:
+            capacity = seats
+
+    if len(registered) >= capacity:
+        print("Event registration is full!")
+        return
+
+    registered.append(sid)
+    students[sid][3].append(event_name)
+
+    print("Successfully registered for", event_name)
+
+
+# ==========================================
+# FUNCTION 6: RESOURCE ALLOCATION
+# ==========================================
+
+def allocate_resource():
+
+    print("\n--- AVAILABLE RESOURCES ---")
+
+    for resource_name, total in resources:
+
+        allocated = 0
+
+        for name, quantity, purpose in resource_allocations:
+            if name == resource_name:
+                allocated += quantity
+
+        print(resource_name,
+              "| Total:", total,
+              "| Available:", total - allocated)
+
+    resource_name = input("Enter Resource Name: ")
+
+    try:
+        quantity = int(input("Enter Quantity: "))
+    except ValueError:
+        print("Enter a valid quantity!")
+        return
+
+    purpose = input("Enter Purpose: ")
+
+    if quantity <= 0:
+        print("Quantity must be positive!")
+        return
+
+    available = -1
+
+    for name, total in resources:
+        if name.lower() == resource_name.lower():
+            allocated = 0
+
+            for rname, qty, reason in resource_allocations:
+                if rname == name:
+                    allocated += qty
+
+            available = total - allocated
+            resource_name = name
+            break
+
+    if available == -1:
+        print("Resource not found!")
+        return
+
+    if quantity > available:
+        print("Insufficient resources available!")
+        return
+
+    # Tuple used for allocation record
+    allocation = (resource_name, quantity, purpose)
+
+    resource_allocations.append(allocation)
+
+    print("Resource allocated successfully!")
+
+
+# ==========================================
+# FUNCTION 7: STUDENT SUMMARY REPORT
+# ==========================================
+
+def student_report():
+
+    sid = input("Enter Student ID: ")
+
+    if sid not in students:
+        print("Student not found!")
+        return
+
+    name, attendance, marks, registered = students[sid]
+
+    print("\n========== STUDENT REPORT ==========")
+
+    print("Student ID:", sid)
+    print("Student Name:", name)
+
+    # Calculate attendance
+    total_days = len(attendance)
+
+    present_days = 0
+
+    for date, status in attendance:
+        if status == "P":
+            present_days += 1
+
+    if total_days > 0:
+        percentage = (present_days / total_days) * 100
+    else:
+        percentage = 0
+
+    print("Total Attendance:", total_days)
+    print("Present Days:", present_days)
+
+    print("Attendance Percentage:",
+          round(percentage, 2), "%")
+
+    # Calculate average marks
+    total_marks = 0
+
+    print("\n--- MARKS DETAILS ---")
+
+    for subject, mark in marks:
+        print(subject, ":", mark)
+        total_marks += mark
+
+    if len(marks) > 0:
+        average = total_marks / len(marks)
+    else:
+        average = 0
+
+    print("Average Marks:", round(average, 2))
+
+    # Display registered events
+    print("\n--- REGISTERED EVENTS ---")
+
+    if registered:
+        for event in registered:
+            print(event)
+    else:
+        print("No event registrations.")
+
+    print("====================================")
+
+
+# ==========================================
+# FUNCTION 8: OVERALL CAMPUS REPORT
+# ==========================================
+
+def campus_report():
+
+    print("\n======= CAMPUS SUMMARY REPORT =======")
+
+    print("Total Students:", len(students))
+
+    total_attendance = 0
+    total_present = 0
+    total_marks = 0
+    marks_count = 0
+
+    for sid, details in students.items():
+
+        name, attendance, marks, registered = details
+
+        total_attendance += len(attendance)
+
+        for date, status in attendance:
+            if status == "P":
+                total_present += 1
+
+        for subject, mark in marks:
+            total_marks += mark
+            marks_count += 1
+
+    if total_attendance > 0:
+        attendance_percentage = (
+            total_present / total_attendance
+        ) * 100
+    else:
+        attendance_percentage = 0
+
+    if marks_count > 0:
+        average_marks = total_marks / marks_count
+    else:
+        average_marks = 0
+
+    print("Overall Attendance:",
+          round(attendance_percentage, 2), "%")
+
+    print("Overall Average Marks:",
+          round(average_marks, 2))
+
+    print("\n--- EVENT REGISTRATION SUMMARY ---")
+
+    for eid, event_name, capacity in events:
+
+        print(event_name, ":",
+              len(event_registrations[eid]),
+              "/", capacity, "registered")
+
+    print("\n--- RESOURCE ALLOCATION SUMMARY ---")
+
+    for resource_name, total in resources:
+
+        allocated = 0
+
+        for name, quantity, purpose in resource_allocations:
+            if name == resource_name:
+                allocated += quantity
+
+        print(resource_name,
+              ": Allocated =", allocated,
+              ", Available =", total - allocated)
+
+    print("====================================")
+
+
+# ==========================================
+# MAIN MENU
+# ==========================================
+
+while True:
+
+    print("\n================================")
+    print(" SMART CAMPUS MANAGEMENT SYSTEM")
+    print("================================")
+
+    print("1. Add Student")
+    print("2. View Students")
+    print("3. Mark Attendance")
+    print("4. Enter Marks")
+    print("5. Event Registration")
+    print("6. Resource Allocation")
+    print("7. Student Summary Report")
+    print("8. Overall Campus Report")
+    print("9. Exit")
+
+    choice = input("\nEnter Your Choice: ")
+
+    if choice == "1":
+        add_student()
+
+    elif choice == "2":
+        view_students()
+
+    elif choice == "3":
+        mark_attendance()
+
+    elif choice == "4":
+        enter_marks()
+
+    elif choice == "5":
+        register_event()
+
+    elif choice == "6":
+        allocate_resource()
+
+    elif choice == "7":
+        student_report()
+
+    elif choice == "8":
+        campus_report()
+
+    elif choice == "9":
+        print("Thank you for using Smart Campus Management System!")
+        break
+
+    else:
+        print("Invalid Choice! Please try again.")
+

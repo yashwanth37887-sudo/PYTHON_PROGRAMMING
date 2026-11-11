@@ -24,7 +24,7 @@ Objectives:
 6. Check concession eligibility:
    - Senior citizens (age 60 or above) receive a 10% concession on consultation charges.
    - Patients with a concession card receive a 20% concession on diagnostic and treatment charges.
-   - flowchart:(mermaid):
+   - flowchart ---(mermaid)
    - 
 flowchart TD
     A([START]) --> B[Define Slab Rates, Fixed Charges, Surcharge and Rebate]
@@ -68,16 +68,17 @@ flowchart TD
     X -- Yes --> E
     X -- No --> Y[Display Monthly Comparison Report]
     Y --> Z([STOP])
+   ---
 
-7. Calculate the total concession.
-8. Ensure that the concession does not exceed the gross bill.
-9. Calculate the final payable amount.
-10. Classify the patient:
+8. Calculate the total concession.
+9. Ensure that the concession does not exceed the gross bill.
+10. Calculate the final payable amount.
+11. Classify the patient:
     - Low Payment: Amount up to ₹5,000.
     - Medium Payment: Amount between ₹5,001 and ₹15,000.
     - High Payment: Amount above ₹15,000.
-11. Display the billing details and patient classification.
-12. Stop.
+12. Display the billing details and patient classification.
+13. Stop.
 Note: The concession rules and payment categories above are illustrative assumptions because no specific payment policy was attached.
  
 5. Sample Input
